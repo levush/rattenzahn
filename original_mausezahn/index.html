@@ -1,0 +1,393 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>perihel - closer to the sun</title>
+  <meta name="author" content="Herbert Haas"/>
+  <meta name="generator" content="jed"/>
+  <meta name="description" content="yes, I do code HTML myself"/>
+  <meta name="keywords" content="networking, vlan hopping, jitter, VoIP,
+  linux, MPLS, syn flood,  ubuntu, debian, hacker, attack, exploit, evasion, IDS, IPS, traffic generator, 
+  Denial of Service, DoS, free software, penetration testing, reconnaissance, 
+  mausezahn, security audit, audits, multicast"/>
+  <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+  <meta http-equiv="Content-Style-Type" content="text/css"/>
+  <link rel="stylesheet" type="text/css" href="http://www.perihel.at/stylesheets/style.css"/>
+  <link rel="shortcut icon" type="image/x-icon" href="http://www.perihel.at/sec/mz/favicon.ico"/>
+</head>
+
+<body>
+  <br/>
+
+  <h1><img src="mztitle.png" width="701" height="117" alt="JAWS"></h1>
+
+  <div id="Left">
+    <ul id="Navigation">
+      <li><a href="#what">What is Mausezahn?</a></li>
+
+      <li><a href="#how">Quick Introduction</a></li>
+
+      <li><a href="#disclaimer">Disclaimer and License</a></li>
+
+      <li><a href="#download"><b style="color: #c10d0a;">DOWNLOAD</b></a></li>
+
+      <li><a href="#docs">Documentation</a></li>
+      <li><a href="#bugs">Bugs</a></li>
+    </ul>
+  </div>
+
+  <div id="Info">
+    <h2>NEWS</h2>
+    
+    <p><b>2010-07-07</b> Released <a href="mz-0.40.tar.gz">mz-0.40</a>:
+    New features including configurable packet sequences, IP fragmentation
+    (also with overlaps), better PVST+ and IP loose source routing, lots of
+    bugfixes, etc.  See the <a href="ChangeLog">ChangeLog</a>.</p>
+
+    <p><b>2010-03-07</b> Released <a href="mz-0.39.tar.gz">mz-0.39</a>: Fixed
+    the nasty CPU-consumption bug that occurred on systems with the latest
+    libpcap-dev, improved jitter measurement, updated documentation. Everybody
+    should upgrade to this release for security and stability reasons!
+    See the <a href="ChangeLog">ChangeLog</a> for more information about this
+    and the previous releases.</p>
+
+    <p><b>2009-12-24</b> Released <b>mz-0.38</b>
+    which is a major release; probably 'Mausezahn next-generation'. It is now
+    multi-threaded and provides a Cisco-style command line. Other features
+    include improved jitter measurements, and the new MOPS-part supports nanosecond 
+    inter-packet delay, IGMP (v1, v2), LLDP, and ARP monitoring. 
+    The quick old style operation is still supported and has also been improved.
+    This is a X-mas release; I will still be busy the next weeks and months so
+    expect many additional features soon.
+    </p>
+
+    <p><b>2009-08-06</b> Released <b>mz-0.34.9</b> -
+    which fixed some problems during the build process on different platforms.
+    </p>
+
+
+    <p><b>2009-07-29</b> Released mz-0.34.8 - Only
+    a small 'cosmetic' update to enhance the build process with safety checks.
+    </p>
+
+
+    <p><b>2009-07-27</b> Released <b>mz-0.34.7 - A security bugfix</b>
+    with some additional features: RTP packet drop count, disorder count (the number of permutations
+    needed to regain the correct sequence) now also written in log files, 
+    and RTP jitter estimation as specified in RFC3550 (smoothed mean deviation). 
+    
+    This is NOT the promised summer update (which will come in August) but
+    only a small update of the 'legacy code'. 
+    </p>
+
+    <p><b>2008-12-10</b> Released <b>mz-0.34.6</b> which supports easier creation
+    of fragmented IP packets (the flags df, mf, and rf can be set
+    more easily).</p>
+   
+    <p><b>2008-10-30</b> Released <b>mz-0.34.5</b> which includes one important
+    bugfix and also supports measuring the degree of out-of-order
+    RTP packets as well as dropped RTP packets.</p>
+
+    <p><b>2008-10-26</b> FYI: just to inform you that I am not
+    lazy, the next Mausezahn release (0.35) is coming soon. Lots of
+    new features and fixes will be included!</p>
+
+    <p><b>2008-10-07</b> I've got some reports that v0.34 has some
+    problems with the high precision timer on some systems. I
+    immediately fixed that in <b>mz-0.34.1</b> which automatically determines
+    which timer is the most usable on your system. See also the
+    <a href="#download">download</a> section below.</p>
+
+    <p><b>2008-09-24</b> Version 0.34, improved timer for jitter
+    measurement, IP source route options, and ICMP improvements.
+    See also the changelog.</p>
+
+    <p><b>2008-09-11</b> Version 0.33.2, fixed bugs with BPDUs,
+    PVST+, and RTP. Got reports that some Cisco switches do not
+    accept Mausezahn's CDP packets anymore...even Wireshark
+    recognizes a bad checksum in the <em>original</em> CDP packets
+    (while Mausezahn's checksum is OK)...does anybody know what's
+    going on there? I will focus on that...</p>
+
+    <p><b>2008-09-04</b> Version 0.33.1, minor fixes.</p>
+
+    <p><b>2008-08-20</b> Version 0.33 out now! Now an cmake-based
+    build mechanism is included, support for the Syslog protocol,
+    minor bugfixes, and most importantly, the license is now
+    clearly defined: GPLv2.</p>
+  </div>
+
+  <div id="Inhalt">
+    
+	
+	
+	
+	
+	
+	<h2><a name="what" id="what">What is Mausezahn?</a></h2>
+
+    <p>Mausezahn is a free fast traffic generator written in C
+    which allows you to send nearly every possible and impossible
+    packet. It is mainly used to test VoIP or multicast networks
+    but also for security audits to check whether your systems are
+    hardened enough for specific attacks.</p>Mausezahn can be used
+    for example:
+
+    <ul>
+      <li>As <b>traffic generator</b> (e. g. to stress multicast
+      networks)</li>
+
+      <li>To precisely measure <b>jitter</b> (delay variations)
+      between two hosts (e. g. for VoIP-SLA verification)</li>
+
+      <li>As <b>didactical</b> tool during a datacom lecture or for
+      lab exercises</li>
+
+      <li>For <b>penetration testing</b> of firewalls and IDS</li>
+
+      <li>For DoS attacks on networks (for audit purposes of
+      course)</li>
+
+      <li>To find bugs in network software or appliances</li>
+
+      <li>For reconnaissance attacks using ping sweeps and port
+      scans</li>
+
+      <li>To test network behaviour under strange circumstances
+      (stress test, malformed packets, ...)</li>
+    </ul>
+
+    <p>...and more. Mausezahn is basically a versatile packet
+    creation tool on the command line with a simple syntax and
+    context help. It could also be used within (bash-) scripts to
+    perform combination of tests. By the way, Mausezahn is quite
+    fast; when started on my old PIII-Laptop (1.4 GHz, Gigabit
+    Ethernet) I measured <b>755 Mbit/s</b> using the interface
+    packet counters of an HP ProCurve 5400 switch.</p>
+
+    <p>Currently Mausezahn is only available for Linux platforms.
+    <b>Please</b> <b>do NOT PORT Mausezahn to Windows!</b>
+    (<a href="http://www.fefe.de/nowindows/">Here is a nice explanation
+    why</a>; I really share Felix von Leitner's point of view.)
+    </p>
+
+    <h2><a name="how" id="how">Quick Introduction</a></h2>
+
+    <p>As of version 0.38, Mausezahn supports the following
+    protocols:</p>
+
+    <ul>
+      <li>ARP</li>
+
+      <li>BPDU or PVST</li>
+
+      <li>CDP</li>
+      
+      <li>LLDP</li>
+
+      <li>IP</li>
+
+      <li>IGMP</li>
+
+      <li>UDP</li>
+
+      <li>TCP (stateless)</li>
+
+      <li>ICMP (partly)</li>
+
+      <li>DNS</li>
+
+      <li>RTP optionally RX-mode for jitter measurements</li>
+
+      <li>Syslog</li>
+    </ul>
+
+    <p>All packets can be VLAN-tagged and/or include an MPLS label
+    stack (both in arbitrary depth). Furthermore, all header
+    parameters are easily accessible, many of them support ranges,
+    and even invalid settings are possible. By default the most
+    appropriate header parameters are chosen.</p>
+
+    <p>Let me give you a quick example to demonstrate how simple it
+    is to work with Mausezahn.</p>
+
+    <p>&#9654; Send an <b>arbitrary sequence of bytes</b> through
+    your network card 1000 times:</p>
+    <pre id="code">
+# mz eth0 -c 1000 \
+"ff:ff:ff:ff:ff:ff ff:ff:ff:ff:ff:ff cc:dd 00:00:00:ca:fe:ba:be"
+</pre>Note that this 'frame' is (by intention) completely invalid
+with respect to the Ethernet standard; the frame is too short
+(called a 'runt') and has a broadcast source address.
+
+    <p>&#9654; But you can send more complex packets easily with
+    the built-in packet builders using the <b>-t</b> option. Let's
+    send a <b>forged DNS response</b> to host 192.168.1.2 by
+    impersonating the DNS server 10.7.7.42:</p>
+    <pre id="code">
+# mz eth0  -A 10.7.7.42 -B 192.168.1.2 \
+-t dns "q=www.thehostyouseek.com, a=172.16.6.66"
+</pre>Of course you can manipulate much more in the DNS header,
+simply type <b>mz -t dns help</b> for additional help.
+
+    <p>&#9654; Perform a <b>TCP SYN-Flood</b> attack against all
+    hosts in subnet 10.5.5.0/24 which are in VLAN 100. Try out all
+    1023 well-known ports. Provided that you are in the native VLAN
+    50 you can reach the target via <b>VLAN-hopping</b>. Repeat the
+    whole attack endlessly by setting the count option to zero:</p>
+    <pre id="code">
+# mz eth0 -c 0 -Q 50,100 -A rand -B 10.5.5.0/25 \
+-t tcp "flags=syn, dp=1-1023"
+</pre>
+
+    <p>&#9654; <b>Confuse the spanning tree:</b> Behave like a root
+    bridge and generate BPDUs with lowest Bridge ID every two
+    seconds:</p>
+    <pre id="code">
+# mz eth0 -c 0 -d 2s -t bpdu 
+</pre>As you see you don't even need to specify any other BPDU
+parameters because Mausezahn assumes that your PC wants to be the
+root per default. Of course you can modify every BPDU parameter.
+Event the Cisco-proprietary per-vlan spanning tree <b>PVST+</b> is
+supported:
+    <pre id="code">
+# mz eth0 -c 0 -d 2s -t bpdu vlan=314
+</pre>
+
+    <p>&#9654; Voice over IP connections suffer from <b>jitter</b>
+    (delay variations). Hence it is important to know the jitter
+    across a given path. Using Mausezahn you can precisely measure
+    the jitter continuously. Simply configure a Mausezahn sender
+    and a receiver:</p>
+    <pre id="code">
+TX# mz eth0 -t rtp -B rx.somewhere.net
+RX# mz eth0 -T rtp "log, path=/tmp"
+</pre>Using these settings, the sender (TX) sends RTP packets every
+20 msec to the specified receiver (RX). Station RX stores moving
+average data in /tmp/rtp_avg_20080801-120233 (filename is current
+timestamp). The data is a comma seperated list that can be easily
+analyzed and visualized with standard tools, e. g. R, Matlab,
+Octave, or <a href="viewrtp.tgz">this python tool</a> (which needs
+the matplotlib). An example output is seen below, I only measured
+the jitter across a local gigabit link. <img src="localjitter.png" width="600" height="404" alt="JAWS">
+
+    <p>&#9654; <b>Real-time jitter monitoring</b> As with version
+    0.38, Mausezahn supports two nicer displays of the jitter measurements.
+    The default is 'bar':
+    </p><img src="mz_jitter.png" width="639" height="837" alt="JAWS" border="1">
+
+    <p>...the other is 'txt':</p>
+    <img src="mz_jitter1.png" width="574" height="709" alt="JAWS" border="1">
+    
+    <p>&#9654; <b>Interactive and multi-threaded mode</b> As with version
+    0.38, Mausezahn alternatively provides an interactive mode with Cisco-style
+    command line. To try out, start Mausezahn e. g. with</p>
+
+    <pre id="code">
+# mz  -x 99
+    </pre>
+
+    <p>and open a telnet connection to port 99 from another terminal or
+       computer. Here are some impressions:</p>
+    <img src="mz_cli1.png" width="533" height="397" alt="JAWS" border="1">
+    <br/> <br/>
+    <img src="mz_cli2.png" width="674" height="655" alt="JAWS" border="1">
+    <br/> <br/>
+    <img src="mz_cli3.png" width="742" height="297" alt="JAWS" border="1">
+    <br/> <br/>
+    <img src="mz_cli4.png" width="848" height="201" alt="JAWS" border="1">
+    <br/> <br/>
+    <img src="mz_cli5.png" width="604" height="791" alt="JAWS" border="1">
+    <br/> <br/>
+    <img src="mz_cli6.png" width="623" height="606" alt="JAWS" border="1">
+    <br/> <br/>
+    <img src="mz_cli7.png" width="666" height="683" alt="JAWS" border="1">
+    <br/> <br/>
+    <img src="mz_cli8.png" width="897" height="497" alt="JAWS" border="1">
+    <br/> <br/>    
+    <img src="mz_cli9.png" width="859" height="792" alt="JAWS" border="1">
+    <br/> <br/>
+    <img src="mz_cli10.png" width="897" height="649" alt="JAWS" border="1">
+    
+    <h2><a name="disclaimer" id="disclaimer">Disclaimer and
+    License</a></h2>
+
+    <p>Mausezahn is basically a network and firewall testing tool.
+    Don't use this tool when you are not aware of its consequences
+    or have only little knowledge about networks and data
+    communication. If you abuse Mausezahn for unauthorized attacks
+    and get caught, or damage something of your own, then this is
+    completely your fault.</p>
+
+    <p>Mausezahn (C)2007-2009 by Herbert Haas is licensed under the
+    <a href="http://www.gnu.org/licenses/gpl-2.0.html">GNU Public
+    License (GPL) version 2</a>.</p>
+
+    <h2><a name="download" id="download">Download Mausezahn</a></h2>
+
+    <table cellpadding="5" rules="rows" style="border:1px solid gray; font-size:1em; background-color:#eeeeff; line-height:100%;">
+    <tr align="left" valign="top">
+    <td><a href="mz-0.40.tar.gz"><b>mz-0.40.tar.gz</b></a></td>
+    <td><small>md5sum: d3d959c9 2cbf3d81 224f5b2f 8409e9d8</small></td>
+    <td>Released 7th July 2010</td>
+    </tr>
+    </table>
+    <br>
+
+
+    <p>Since Mausezahn is open source (and now part of Debian SID
+    and other Linux distributions) I only provide tar balls
+    here. In order to build the binary you need the <em>cmake</em>
+    package, as well as actual versions of <em>libnet</em> and
+    <em>libpcap</em>. See the INSTALL instructions in the
+    Mausezahn package.</p>
+    
+    <p>For FreeBSD users, many thanks to Jacob Myers, who wrote:
+    <em>I have successfully built a fully-functional Mausezahn copy on FreeBSD
+    without any source modification. I merely added</em>  
+    <pre id="ode">
+    -I/usr/local/include/libnet11 -L/usr/local/lib/libnet11 
+    -D_POSIX_C_SOURCE 199309L</pre> <em>to</em> <b>CMAKE_C_FLAGS</b> <em>and changed the build
+    type to</em>
+    <b>None</b> <em>using</em> <b>ccmake.</b> I plan to set up a BSD system to
+    make Mausezahn easier portable to those (real) UNIXes. 
+    </p>
+ 
+    <br/>
+    <br/>
+    
+
+    <h2><a name="docs" id="bugs">Documentation</a></h2>
+
+    I have written a short introduction into Mausezahn which comes in two parts:
+    
+    <ol>
+    <li><a href="mzguide.html">Mausezahn in direct mode</a></li>
+    <li><a href="mops.html">Mausezahn in interactive mode</a></li>
+    
+    </ol>
+
+
+    <h2><a name="bugs" id="bugs">Bugs and Feedback</a></h2>
+
+    <p>Please tell me about your experience with Mausezahn, which
+    features you miss, and which bugs you have found.</p>
+
+    <p>Dear developers: Currently Mausezahn is undergoing
+    significant architectural changes and cleanups - therefore you
+    should <em>not</em> add your own code to it because it will be incompatible
+    later. For now it is better you tell me your desired features
+    and I will put them on the (continuously growing) wishlist.</p>
+
+    <p>You can reach me via <em>herbertXXXperihel.at</em> (replace
+    the XXX with one @ symbol) and please mention "MAUSEZAHN" in
+    the subject line.</p>
+
+    <p>Before you send me a bug report please look at the <a href="ChangeLog">changelog</a>.</p><br>
+    <br>
+  </div><br/>
+</body>
+</html>
